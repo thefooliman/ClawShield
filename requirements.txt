@@ -1,0 +1,5 @@
+numpy>=2.0.0
+opencv-python>=4.8.0
+pyautogui>=0.9.53
+Pillow>=10.0.0
+pyobjc-framework-AppKit>=12.0
