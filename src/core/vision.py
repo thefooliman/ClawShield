@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pytesseract
+import pyautogui
 class VisionGuard:
     def __init__(self):
         # Initialize SIFT algorithm for detecting image feature points
@@ -68,12 +69,37 @@ class VisionGuard:
 
         # Return the highest score from both matching methods
         return max(sift_score, template_score)
-def get_text_from_region(image_np):
-    """
-    Convert screenshot to grayscale and recognize text
-    """
-    gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
-    # OCR optimization for small images: binarization
-    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
-    text = pytesseract.image_to_string(thresh, lang='eng')
-    return text.lower().strip()
+
+    def capture_around(self, x, y, region_size=200):
+        """
+        Capture a region around the given coordinates
+        Returns: screenshot in OpenCV format (numpy array)
+        """
+        # Capture region around (x, y)
+        half_size = region_size // 2
+        left = max(0, x - half_size)
+        top = max(0, y - half_size)
+
+        # Ensure region doesn't exceed screen bounds
+        screen_width, screen_height = pyautogui.size()
+        width = min(region_size, screen_width - left)
+        height = min(region_size, screen_height - top)
+
+        # Take screenshot
+        screenshot_pil = pyautogui.screenshot(region=(left, top, width, height))
+
+        # Convert PIL Image to OpenCV format
+        screenshot_cv = cv2.cvtColor(np.array(screenshot_pil), cv2.COLOR_RGB2BGR)
+        return screenshot_cv
+
+    def extract_text(self, image_np):
+        """
+        Extract text from an image using OCR
+        Returns: lowercase text string
+        """
+        gray = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
+        # OCR optimization for small images: binarization
+        _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+        text = pytesseract.image_to_string(thresh, lang='eng')
+        return text.lower().strip()
+

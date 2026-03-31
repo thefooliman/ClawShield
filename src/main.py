@@ -5,7 +5,6 @@ import time
 
 from src.utils.coords import ScreenTransformer
 from src.core.vision import VisionGuard
-from src.core.rules import calculate_risk
 from src.core.click import safe_click
 def main():
     # Initialize your tools
@@ -122,17 +121,19 @@ def main():
     cv2.destroyAllWindows() # Close all OpenCV windows on exit
 def run_shield_demo():
     print("🎯 Move your mouse to a button and wait 2 seconds...")
+    print("ClawShield will scan the area and assess risk automatically")
     import time; time.sleep(2)
-    
+
     x, y = pyautogui.position()
-    # Capture 200x200 area
-    screenshot = pyautogui.screenshot(region=(x-100, y-100, 200, 200))
-    img = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-    
-    text = get_text_from_region(img)
-    score, words = calculate_risk(text)
-    
-    print(f"🔍 Scanned text: '{text}' | Risk Score: {score}")
-    safe_click(x, y, score, words)
+    print(f"📍 Target coordinates: ({x}, {y})")
+
+    # Use the new safe_click which handles everything internally
+    print("🔍 Scanning area for dangerous text...")
+    success = safe_click(x, y)
+
+    if success:
+        print("✅ Click executed successfully")
+    else:
+        print("🛑 Click was blocked by user or risk assessment")
 if __name__ == "__main__":
     main()
