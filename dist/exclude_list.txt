@@ -1,0 +1,46 @@
+# ClawShield 打包排除列表
+# 自动生成于 $(date)
+
+# 虚拟环境
+venv/
+
+# Git 相关
+.git/
+.gitignore
+.gitmodules
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 环境文件
+.env
+.env.local
+.env.*.local
+
+# 日志文件
+*.log
+logs/
+
+# 测试截图
+assets/screenshots/
+
+# 构建输出
+dist/
+build/
+*.egg-info/
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS 特定
+*.app/

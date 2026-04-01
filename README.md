@@ -1,5 +1,5 @@
-# 🛡️ ClawShield (v0.4)
-**A Hybrid AI Security Sentry for Autonomous Agents. Stop accidental clicks before they happen.**
+# 🛡️ ClawShield (v1.0)
+**OpenClaw Security Middleware. A Hybrid AI Security Sentry for Autonomous Agents.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
@@ -15,26 +15,30 @@ ClawShield is a hybrid AI security layer that prevents autonomous agents from pe
 - **Native macOS Integration**: Seamless user confirmation dialogs
 - **Real-time Visual Audit**: Live screen analysis with OCR and AI
 - **Lightweight & Fast**: Efficient risk assessment with intelligent LLM triggering
+- **OpenClaw Integration**: CLI wrapper and middleware for universal agent security
+- **Unified CLI**: Single command interface for all ClawShield operations
 
 ---
 
-## 🚀 How it Works (v0.4 Hybrid AI System)
+## 🚀 How it Works (v1.0 OpenClaw Security Middleware)
 
-1. **Target Capture**: Intercepts click coordinates $(x, y)$ from AI agent or user.
-2. **Visual Context Capture**: Crops a $200 \times 200$ pixel region around cursor for UI analysis.
-3. **Multi-Modal Analysis**:
+1. **Command Interception**: ClawShield wraps OpenClaw commands or acts as middleware, intercepting click operations before execution.
+2. **Target Capture**: Extracts click coordinates $(x, y)$ from intercepted OpenClaw commands or agent actions.
+3. **Visual Context Capture**: Crops a $200 \times 200$ pixel region around cursor for UI analysis.
+4. **Multi-Modal Analysis**:
    - **OCR Text Extraction**: Uses Tesseract to extract UI text
    - **Visual AI Classification**: Local LLM (Ollama) analyzes button appearance for deception
    - **Contextual Assessment**: Screen position, historical trust patterns
-4. **Four-Factor Risk Assessment**:
+5. **Four-Factor Risk Assessment**:
    - **Keyword Matching** (50%): Weighted dangerous words (Delete=1.0, Confirm=0.9, etc.)
    - **Position Risk** (25%): Clicks near screen center are higher risk
    - **Historical Trust** (10%): Previously allowed actions gain trust
    - **LLM Visual Risk** (15%): AI-based deception detection
-5. **Adaptive Decision Making**:
+6. **Adaptive Decision Making**:
    - **High Risk (>0.7)**: macOS native dialog for user confirmation
    - **Medium Risk (0.3-0.7)**: Warning but automatic execution
    - **Low Risk (<0.3)**: Direct pass with logging
+7. **Execution Control**: Allows safe clicks to proceed, blocks dangerous ones, and provides detailed feedback to the calling agent or user.
 
 ### 📐 The Risk Formula
 The hybrid risk score $R$ combines four factors:
@@ -45,6 +49,35 @@ Where:
 - $R_{\text{position}}$: Normalized distance from screen center (closer = higher risk)
 - $R_{\text{history}}$: Trust factor based on previous interactions (negative = trusted)
 - $R_{\text{LLM}}$: Visual deception score from local LLM analysis (0-1)
+
+### 🔌 OpenClaw Integration Architecture
+
+ClawShield v1.0 supports two integration modes with OpenClaw:
+
+#### **Wrapper Executor Mode**
+```
+OpenClaw Command → ClawShield Wrapper → Security Assessment → Safe Execution
+```
+- Intercepts OpenClaw CLI commands
+- Parses click coordinates from command syntax
+- Applies multi-factor risk assessment
+- Executes only safe clicks, blocks dangerous ones
+
+#### **Plugin/Middleware Mode**
+```
+OpenClaw Agent → ClawShield Plugin → Click Hook → Security Check → Decision
+```
+- Integrates as a plugin within OpenClaw's execution pipeline
+- Provides hook methods for click events
+- Returns allow/block decisions with reasoning
+- Maintains full compatibility with OpenClaw API
+
+#### **Unified CLI**
+The `clawshield` command provides a unified interface:
+- `run --wrap openclaw`: Wrap OpenClaw commands with security
+- `test`: Run comprehensive test suite
+- `demo`: Interactive demonstration
+- `sentinel`: Real-time protection mode
 
 ---
 
@@ -86,6 +119,44 @@ pip install -r requirements.txt
 ```
 
 ## 📖 Usage
+
+### Unified CLI Interface
+ClawShield now provides a unified command-line interface for all operations:
+
+```bash
+# Make the CLI executable (first time only)
+chmod +x clawshield
+
+# Run OpenClaw commands with security wrapping
+./clawshield run --wrap openclaw click 100 200
+./clawshield run --wrap openclaw "click(100, 200)"
+
+# Run tests
+./clawshield test
+
+# Run demonstration
+./clawshield demo
+
+# Run real-time protection sentinel
+./clawshield sentinel
+
+# Show help
+./clawshield --help
+```
+
+### OpenClaw Integration Examples
+Wrap OpenClaw commands with ClawShield security:
+
+```bash
+# Basic click wrapping
+./clawshield run --wrap openclaw click 500 300
+
+# Complex OpenClaw command wrapping
+./clawshield run --wrap openclaw "mouse click --button left 800 400"
+
+# Batch command wrapping
+./clawshield run --wrap openclaw "click(100,200); click(300,400); click(500,600)"
+```
 
 ### Test Ollama Integration
 First, verify that the local AI vision model is working:
@@ -139,9 +210,9 @@ else:
 ---
 
 ## 🗺️ Roadmap
-- [x] Phase 0: Basic OCR + Keyword matching + Native Dialog (MVP)
-- [x] Phase 1: Local Vision LLM (Ollama) integration with multi-factor risk scoring
-- [ ] Phase 2: OpenClaw Protocol integration for universal Agent control.
+- [x] Phase 0: Basic OCR + Keyword matching + Native Dialog (MVP) - **v0.1**
+- [x] Phase 1: Local Vision LLM (Ollama) integration with multi-factor risk scoring - **v0.4**
+- [x] Phase 2: OpenClaw Protocol integration with CLI wrapper - **v1.0**
 
 ---
 

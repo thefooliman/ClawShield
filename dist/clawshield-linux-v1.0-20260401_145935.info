@@ -1,0 +1,42 @@
+ClawShield Linux 打包信息
+=======================
+
+打包时间: 2026年 4月 1日 星期三 14时59分35秒 CEST
+打包版本: v1.0
+打包标识: clawshield-linux-v1.0-20260401_145935
+
+源目录: /Users/admin/ClawShield
+输出文件: /Users/admin/ClawShield/dist/clawshield-linux-v1.0-20260401_145935.tar.gz
+文件大小: 68747B
+
+排除内容:
+- venv/ (Python虚拟环境)
+- .git/ (Git版本控制)
+- __pycache__/ (Python缓存)
+- *.pyc (Python字节码)
+- .DS_Store (macOS系统文件)
+- assets/screenshots/ (测试截图)
+- dist/ (构建输出目录)
+
+包含的主要组件:
+- src/ (源代码)
+- scripts/ (脚本文件)
+- requirements.txt (Python依赖)
+- *.py (Python脚本)
+- *.md (文档文件)
+- TESTING_OPENCLAW_INTEGRATION.md (测试指南)
+
+Linux 适配说明:
+- 已添加跨平台对话框模块 (src/core/dialog.py)
+- 已更新 click.py 使用跨平台对话框
+- 已创建 Linux 安装脚本 (scripts/install_linux.sh)
+- 已移除 macOS 特有依赖 (pyobjc-framework-AppKit)
+
+传输建议:
+1. 使用 SCP 传输到 Linux 虚拟机
+2. 解压: tar -xzf clawshield-linux-v1.0-20260401_145935.tar.gz
+3. 运行安装脚本: ./scripts/install_linux.sh
+4. 测试: ./clawshield run --wrap openclaw 'click 100 200'
+
+测试指南:
+详见 TESTING_OPENCLAW_INTEGRATION.md

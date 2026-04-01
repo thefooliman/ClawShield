@@ -1,0 +1,214 @@
+# OpenClaw Configuration with ClawShield Security Plugin
+# Save this as: ~/.openclaw/config.yaml or openclaw_config.yaml
+
+version: "2.0"
+name: "Secure Automation with ClawShield"
+
+# Plugin Configuration
+plugins:
+  - name: "clawshield_security"
+    module: "openclaw_plugin_clawshield"
+    class: "ClawShieldOpenClawPlugin"
+    enabled: true
+    config:
+      # Plugin Settings
+      log_level: "INFO"  # DEBUG, INFO, WARN, ERROR
+      auto_block_high_risk: true
+      enable_visual_ai: true
+      enable_ocr: true
+      cache_size: 1000
+
+      # Risk Assessment Settings
+      risk_threshold_high: 0.7
+      risk_threshold_medium: 0.3
+      require_user_confirm_high_risk: true
+
+      # History and Trust Settings
+      enable_history_tracking: true
+      max_history_entries: 5000
+      trust_decay_days: 30
+
+      # Performance Settings
+      screenshot_region_size: 200
+      max_assessment_time_ms: 5000
+      enable_caching: true
+
+# OpenClaw General Settings
+settings:
+  mouse_speed: "normal"
+  click_delay_ms: 100
+  fail_on_error: false
+
+  # Security Integration
+  security:
+    enabled: true
+    provider: "clawshield"
+    require_risk_assessment: true
+    log_all_actions: true
+
+# Automation Tasks (Example)
+tasks:
+  secure_login:
+    description: "Secure login with risk assessment"
+    steps:
+      - action: "move"
+        params:
+          x: 100
+          y: 200
+        security: "assess"  # Optional security check
+
+      - action: "click"
+        params:
+          x: 150
+          y: 250
+          button: "left"
+        security: "required"  # Required security assessment
+
+      - action: "type"
+        params:
+          text: "secure_username"
+        security: "none"  # No security needed
+
+      - action: "click"
+        params:
+          x: 300
+          y: 350
+        security: "required"
+
+# Risk Profiles (Optional)
+risk_profiles:
+  default:
+    description: "Default security profile"
+    settings:
+      block_delete_buttons: true
+      block_payment_buttons: true
+      warn_on_center_clicks: true
+      require_confirmation_for: ["delete", "confirm", "purchase", "submit"]
+
+  permissive:
+    description: "More permissive profile for trusted environments"
+    settings:
+      block_delete_buttons: false
+      block_payment_buttons: false
+      warn_on_center_clicks: false
+
+  strict:
+    description: "Maximum security for sensitive operations"
+    settings:
+      block_all_high_risk: true
+      require_user_confirmation: true
+      enable_screenshot_analysis: true
+      log_every_action: true
+
+# ClawShield Integration Settings
+clawshield:
+  # Path to ClawShield installation
+  installation_path: "/path/to/ClawShield"
+
+  # Component Configuration
+  components:
+    risk_engine: true
+    vision_guard: true
+    history_store: true
+    ollama_integration: true
+
+  # Ollama Settings (for visual AI)
+  ollama:
+    host: "http://localhost:11434"
+    model: "llava"
+    timeout: 30
+
+  # Tesseract OCR Settings
+  tesseract:
+    language: "eng"
+    config: "--psm 6"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "/var/log/openclaw/secure_automation.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  # Security-specific logging
+  security_log:
+    enabled: true
+    file: "/var/log/openclaw/security_audit.log"
+    retain_days: 30
+
+# Monitoring and Alerts
+monitoring:
+  enabled: true
+  metrics:
+    - "risk_scores"
+    - "blocked_actions"
+    - "assessment_times"
+
+  alerts:
+    high_risk_detected:
+      enabled: true
+      threshold: 0.8
+
+    multiple_blocks:
+      enabled: true
+      threshold: 5
+      timeframe_minutes: 10
+
+# Example Task with Security Integration
+example_secure_browser_automation:
+  description: "Example of secure browser automation with ClawShield"
+  browser: "chrome"
+  url: "https://example.com"
+
+  steps:
+    # Step 1: Navigate to page (safe)
+    - action: "navigate"
+      params:
+        url: "https://example.com/login"
+
+    # Step 2: Click login button (requires security assessment)
+    - action: "click"
+      params:
+        x: 400
+        y: 300
+        button: "left"
+      security:
+        required: true
+        risk_threshold: 0.6
+        on_high_risk: "confirm"  # confirm, block, or allow
+
+    # Step 3: Enter credentials (safe)
+    - action: "type"
+      params:
+        text: "${USERNAME}"
+        field: "username"
+
+    # Step 4: Enter password (safe, but sensitive)
+    - action: "type"
+      params:
+        text: "${PASSWORD}"
+        field: "password"
+        sensitive: true
+
+    # Step 5: Click submit button (high security required)
+    - action: "click"
+      params:
+        x: 450
+        y: 350
+        button: "left"
+      security:
+        required: true
+        risk_threshold: 0.4  # Lower threshold for submit buttons
+        visual_analysis: true
+        keyword_check: ["submit", "confirm", "login"]
+
+# Environment Variables (for sensitive data)
+environment:
+  USERNAME: "{{env:TEST_USERNAME}}"
+  PASSWORD: "{{env:TEST_PASSWORD}}"
+
+# Notes:
+# 1. Copy openclaw_plugin_clawshield.py to your OpenClaw plugins directory
+# 2. Update installation_path to point to your ClawShield directory
+# 3. Configure Ollama if using visual AI analysis
+# 4. Test with simple commands first:
+#    openclaw --config openclaw_config_with_clawshield.yaml run example_secure_browser_automation

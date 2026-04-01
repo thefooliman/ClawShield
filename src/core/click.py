@@ -3,6 +3,7 @@ import pyautogui
 from .risk_engine import RiskEngine
 from .history_store import HistoryStore
 from .vision import VisionGuard
+from .dialog import show_confirmation_dialog
 
 # Initialize components as singletons
 _risk_engine = None
@@ -54,11 +55,10 @@ def safe_click(x, y):
     if risk_score > 0.7:  # High risk threshold
         msg = f"⚠️ High Risk ({risk_score:.2f}): {', '.join(reasons) if reasons else 'Potential danger detected'}"
 
-        # Use macOS native dialog
-        cmd = f'display dialog "{msg}. Proceed?" buttons {{"Block", "Allow"}} default button "Block" with icon caution'
-        response = os.popen(f"osascript -e '{cmd}'").read()
+        # Use cross-platform confirmation dialog
+        allowed = show_confirmation_dialog(f"{msg}. Proceed?")
 
-        if "Allow" in response:
+        if allowed:
             # User allowed - record action for future trust
             history_store.record_action(text, x, y, allowed=True)
             risk_engine.record_action(text, x, y, allowed=True)
@@ -95,10 +95,9 @@ def safe_click_legacy(x, y, risk_score, found_words=None):
     # If high risk, use old dialog logic
     if risk_score > 0.5:
         msg = f"Detected sensitive words: {', '.join(found_words) if found_words else 'Unknown risk'}"
-        cmd = f'display dialog "{msg}. Do you want to proceed?" buttons {{"Cancel", "Confirm"}} default button "Cancel" with icon caution'
-        response = os.popen(f"osascript -e '{cmd}'").read()
+        allowed = show_confirmation_dialog(f"{msg}. Do you want to proceed?")
 
-        if "Confirm" not in response:
+        if not allowed:  # "Block" corresponds to "Cancel"
             print("🛑 Click intercepted by user.")
             return False
 

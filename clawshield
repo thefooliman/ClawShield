@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""
+ClawShield CLI entry point.
+
+This script allows running ClawShield commands from anywhere.
+Make it executable with: chmod +x clawshield
+"""
+
+import sys
+import os
+
+# Add the current directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from src.cli import main
+    sys.exit(main())
+except ImportError as e:
+    print(f"❌ Failed to import ClawShield: {e}")
+    print("\n💡 Make sure you're in the ClawShield project directory")
+    print("   and all dependencies are installed:")
+    print("   pip install -r requirements.txt")
+    sys.exit(1)
+except Exception as e:
+    print(f"❌ Unexpected error: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
